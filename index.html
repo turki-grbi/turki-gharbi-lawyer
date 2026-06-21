@@ -289,13 +289,15 @@
         <h2 id="selectedTitle">—</h2>
       </div>
 
-      <form id="form" action="https://formsubmit.co/ajax/Turki.g.lawyer@gmail.com" method="POST">
-        <input type="hidden" name="_subject" value="طلب استشارة جديد">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false">
-        <!-- بريد احتياطي: عدّل القيمة بالأسفل بأي بريد إلكتروني إضافي تريد أن يستلم نسخة من كل طلب،
-             أو احذف هذا السطر بالكامل إن لم ترغب بإرسال نسخة لبريد ثانٍ -->
-        <input type="hidden" name="_cc" value="">
+      <form id="form" action="https://api.web3forms.com/submit" method="POST">
+        <input type="hidden" name="access_key" value="d0118157dc831c7141a4ab819e09951e">
+        <input type="hidden" name="subject" value="طلب استشارة جديد - مكتب المحامي تركي غربي">
+        <input type="hidden" name="from_name" value="موقع مكتب المحامي تركي غربي">
+        <!-- بريد احتياطي: عدّل القيمة بالأسفل بأي بريد إلكتروني إضافي تريد أن يستلم نسخة من كل طلب
+             (هذه ميزة Pro في Web3Forms)، أو احذف السطر إن لم ترغب بإرسال نسخة لبريد ثانٍ -->
+        <input type="hidden" name="ccemail" value="">
+        <!-- حقل فخّ مضاد للسبام، يجب أن يبقى مخفيًا دائمًا -->
+        <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
         <input type="hidden" name="الخدمة المطلوبة" id="hiddenServiceField">
         <div class="row2">
           <div class="field">
@@ -309,7 +311,7 @@
         </div>
         <div class="field">
           <label for="email">البريد الإلكتروني</label>
-          <input type="email" id="email" name="البريد الإلكتروني" required placeholder="example@email.com">
+          <input type="email" id="email" name="email" required placeholder="example@email.com">
         </div>
         <div class="field">
           <label for="details">تفاصيل مختصرة عن طلبك</label>
@@ -513,16 +515,11 @@ const formEl = document.getElementById('form');
 const submitBtn = document.getElementById('submitBtn');
 const errorBox = document.getElementById('formError');
 
-// نعتمد إرسال حقيقي عبر fetch مباشرة إلى نقطة AJAX الخاصة بـ FormSubmit.
-// هذه الطريقة (بخلاف إرسال النموذج العادي عبر إطار مخفي) تتيح لنا معرفة
-// نتيجة الإرسال فعليًا: نجاح حقيقي أو فشل حقيقي مع رسالة خطأ واضحة للمستخدم،
-// بدل افتراض "تم الإرسال" دائمًا حتى لو لم يصل البريد فعلًا.
-//
-// ملاحظة مهمة لأول استخدام: أول طلب فعلي يُرسل من الموقع سيُحدث تفعيلًا
-// لمرة واحدة فقط لبريد Turki.g.lawyer@gmail.com لدى FormSubmit — تحقق من
-// البريد الوارد (وملف الرسائل غير المرغوب فيها / Spam) فور إرسال أول طلب
-// تجريبي واضغط رابط التفعيل بداخله. بعد ذلك تصل جميع الطلبات تلقائيًا
-// ودون أي خطوة إضافية.
+// نعتمد إرسال حقيقي عبر fetch مباشرة إلى Web3Forms (بديل مستقر لـ FormSubmit
+// الذي كان يعاني من أعطال متكررة في خوادمه). هذه الخدمة لا تتطلب أي خطوة
+// "تفعيل" يدوية عبر البريد — بمجرد إرسال أول طلب فعلي، تصل الرسائل تلقائيًا
+// وفورًا إلى Turki.g.lawyer@gmail.com. النتيجة (نجاح/فشل) تُقرأ من رد
+// الخادم نفسه، فلا تظهر رسالة "تم الإرسال" إلا إذا نجح الإرسال فعلاً.
 
 formEl.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -534,13 +531,18 @@ formEl.addEventListener('submit', async (e) => {
 
   try{
     const formData = new FormData(formEl);
+    const jsonData = Object.fromEntries(formData);
     const response = await fetch(formEl.action, {
       method: 'POST',
-      body: formData,
-      headers: { 'Accept': 'application/json' }
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(jsonData)
     });
+    const result = await response.json();
 
-    if(response.ok){
+    if(response.ok && result.success){
       const finalTitle = document.getElementById('selectedTitle').textContent;
       formEl.style.display = 'none';
       document.getElementById('confirmService').textContent = finalTitle;
@@ -548,7 +550,7 @@ formEl.addEventListener('submit', async (e) => {
       submitBtn.disabled = false;
       submitBtn.textContent = 'تقديم طلب الاستشارة';
     } else {
-      throw new Error('فشل الخادم في استلام الطلب');
+      throw new Error(result.message || 'فشل الخادم في استلام الطلب');
     }
   } catch(err){
     errorBox.textContent = 'تعذّر إرسال طلبك حاليًا. الرجاء المحاولة مرة أخرى، أو التواصل معنا مباشرة عبر الجوال أو البريد الإلكتروني الموضّحين أسفل الصفحة.';
