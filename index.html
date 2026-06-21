@@ -290,7 +290,7 @@
       </div>
 
       <form id="form" action="https://api.web3forms.com/submit" method="POST">
-        <input type="hidden" name="access_key" value="d0118157dc831c7141a4ab819e09951e">
+        <input type="hidden" name="access_key" value="7bcafb11-468a-46ba-b616-6dac6b44d544">
         <input type="hidden" name="subject" value="طلب استشارة جديد - مكتب المحامي تركي غربي">
         <input type="hidden" name="from_name" value="موقع مكتب المحامي تركي غربي">
         <input type="hidden" name="الخدمة المطلوبة" id="hiddenServiceField">
@@ -549,7 +549,7 @@ formEl.addEventListener('submit', async (e) => {
     }
   } catch(err){
     console.error('Web3Forms error:', err);
-    errorBox.textContent = 'تعذّر إرسال طلبك حاليًا. الرجاء المحاولة مرة أخرى، أو التواصل معنا مباشرة عبر الجوال أو البريد الإلكتروني الموضّحين أسفل الصفحة. (تفاصيل تقنية: ' + err.message + ')';
+    errorBox.textContent = 'تعذّر إرسال طلبك حاليًا. الرجاء المحاولة مرة أخرى، أو التواصل معنا مباشرة عبر الجوال أو البريد الإلكتروني الموضّحين أسفل الصفحة.';
     errorBox.classList.add('show');
     submitBtn.disabled = false;
     submitBtn.textContent = 'تقديم طلب الاستشارة';
