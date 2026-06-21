@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -294,11 +293,6 @@
         <input type="hidden" name="access_key" value="d0118157dc831c7141a4ab819e09951e">
         <input type="hidden" name="subject" value="طلب استشارة جديد - مكتب المحامي تركي غربي">
         <input type="hidden" name="from_name" value="موقع مكتب المحامي تركي غربي">
-        <!-- بريد احتياطي: عدّل القيمة بالأسفل بأي بريد إلكتروني إضافي تريد أن يستلم نسخة من كل طلب
-             (هذه ميزة Pro في Web3Forms)، أو احذف السطر إن لم ترغب بإرسال نسخة لبريد ثانٍ -->
-        <input type="hidden" name="ccemail" value="">
-        <!-- حقل فخّ مضاد للسبام، يجب أن يبقى مخفيًا دائمًا -->
-        <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
         <input type="hidden" name="الخدمة المطلوبة" id="hiddenServiceField">
         <div class="row2">
           <div class="field">
@@ -554,7 +548,8 @@ formEl.addEventListener('submit', async (e) => {
       throw new Error(result.message || 'فشل الخادم في استلام الطلب');
     }
   } catch(err){
-    errorBox.textContent = 'تعذّر إرسال طلبك حاليًا. الرجاء المحاولة مرة أخرى، أو التواصل معنا مباشرة عبر الجوال أو البريد الإلكتروني الموضّحين أسفل الصفحة.';
+    console.error('Web3Forms error:', err);
+    errorBox.textContent = 'تعذّر إرسال طلبك حاليًا. الرجاء المحاولة مرة أخرى، أو التواصل معنا مباشرة عبر الجوال أو البريد الإلكتروني الموضّحين أسفل الصفحة. (تفاصيل تقنية: ' + err.message + ')';
     errorBox.classList.add('show');
     submitBtn.disabled = false;
     submitBtn.textContent = 'تقديم طلب الاستشارة';
